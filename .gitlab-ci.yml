@@ -45,12 +45,12 @@ build-artifact:
     - build-job
   image: ${DOCKER_IMAGE}
   script:
-    - cd /go/todo-tg-bot
-    - ls
-    - ls -l todo-tg-bot
+    - pwd
+    - ls -l /go/todo-tg-bot/todo-tg-bot
+    - cp /go/todo-tg-bot/todo-tg-bot .
   artifacts:
     paths:
-      - "/go/todo-tg-bot/todo-tg-bot"
+      - "todo-tg-bot"
     expire_in: 1 week
 
 # unit-test-job:   # This job runs in the test stage.
