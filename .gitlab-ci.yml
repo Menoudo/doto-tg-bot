@@ -24,8 +24,8 @@ stages:          # List of stages for jobs, and their order of execution
 
 variables:
   FILE_TO_COPY: "$CI_BUILDS_DIR/todo-tg-bot"
-  DOCKER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-  DOCKER_DELPOY_IMAGE: ${CI_REGISTRY_IMAGE}_deploy:$CI_COMMIT_SHA
+  PIPELINE_DOCKER_IMAGE: $CI_REGISTRY_IMAGE/pipeline:$CI_COMMIT_SHA
+  DELPOY_DOCKER_IMAGE: ${CI_REGISTRY_IMAGE}/delpoy:$CI_COMMIT_SHA
 
   FILE_NAME: "example.txt"
 
@@ -38,14 +38,14 @@ build-job:       # This job runs in the build stage, which runs first.
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - echo "Build pipeline docker image..."
-    - docker build -f Dockerfile . -t ${DOCKER_IMAGE} --build-arg branch=${CI_COMMIT_REF_NAME}
-    - docker push ${DOCKER_IMAGE}
+    - docker build -f Dockerfile . -t ${PIPELINE_DOCKER_IMAGE} --build-arg branch=${CI_COMMIT_REF_NAME}
+    - docker push ${PIPELINE_DOCKER_IMAGE}
 
 build-artifact:
   stage: create
   dependencies:
     - build-job
-  image: ${DOCKER_IMAGE}
+  image: ${PIPELINE_DOCKER_IMAGE}
   script:
     - pwd
     - ls -l /go/todo-tg-bot/todo-tg-bot
@@ -64,7 +64,7 @@ build-artifact:
 
 linter-job:   # This job also runs in the test stage.
   stage: test    # It can run at the same time as unit-test-job (in parallel).
-  image: ${DOCKER_IMAGE}
+  image: ${PIPELINE_DOCKER_IMAGE}
   script:
     - cd ${GOPATH}/todo-tg-bot/
     - golangci-lint --version
@@ -78,6 +78,6 @@ deploy-job:      # This job runs in the deploy stage.
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - echo "Build pipeline docker image..."
-    - docker build -f delpoy/Dockerfile . -t DOCKER_DELPOY_IMAGE --build-arg branch=${CI_COMMIT_REF_NAME}
-    - docker push DOCKER_DELPOY_IMAGE
+    - echo "Build delpoy docker image..."
+    - docker build -f delpoy/Dockerfile . -t ${DELPOY_DOCKER_IMAGE} --build-arg branch=${CI_COMMIT_REF_NAME}
+    - docker push ${DELPOY_DOCKER_IMAGE}
