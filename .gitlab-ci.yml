@@ -35,6 +35,12 @@ build-job:       # This job runs in the build stage, which runs first.
     - echo "Build pipeline docker image..."
     - docker build -f Dockerfile . -t ${DOCKER_ENV_CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --build-arg branch=${CI_COMMIT_REF_NAME}
     - docker push $DOCKER_ENV_CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  after_script:
+    - docker run $DOCKER_ENV_CI_REGISTRY_IMAGE:$CI_COMMIT_SHA cp $FILE_TO_COPY /go/todo-tg-bot/todo-tg-bot
+  artifacts:
+    paths:
+      - $FILE_TO_COPY
+    expire_in: 1 week
 
 build-job-2:
   stage: build
@@ -45,14 +51,7 @@ build-job-2:
     - cp go.* ${GOPATH}/todo-tg-bot/
     - cd ${GOPATH}/todo-tg-bot/
     - go build -o todo-tg-bot .
-    - pwd
-    - ls
-  after_script:
-    - docker run my_image cp $FILE_TO_COPY /go/todo-tg-bot/todo-tg-bot
-  artifacts:
-    paths:
-      - $FILE_TO_COPY
-    expire_in: 1 week
+
 
 # unit-test-job:   # This job runs in the test stage.
 #   stage: test    # It only starts when the job in the build stage completes successfully.
@@ -63,10 +62,11 @@ build-job-2:
 
 lint-test-job:   # This job also runs in the test stage.
   stage: test    # It can run at the same time as unit-test-job (in parallel).
+  image: $DOCKER_ENV_CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
+    - cd ${GOPATH}/todo-tg-bot/
+    - golangci-lint --version
+    - golangci-lint run
 
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
