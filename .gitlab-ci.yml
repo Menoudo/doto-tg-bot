@@ -18,6 +18,7 @@
 
 stages:          # List of stages for jobs, and their order of execution
   - build
+  - create
   - test
   - deploy
 
@@ -39,7 +40,7 @@ build-job:       # This job runs in the build stage, which runs first.
     - docker push ${DOCKER_IMAGE}
 
 build-artifact:
-  stage: build
+  stage: create
   dependencies:
     - build-job
   image: ${DOCKER_IMAGE}
