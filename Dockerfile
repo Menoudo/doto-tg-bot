@@ -4,7 +4,7 @@ RUN apk add --update git; \
     apk add curl; \
     mkdir -p ${GOPATH}/todo-tg-bot
 WORKDIR ${GOPATH}/todo-tg-bot/
-COPY test-rest-api.go ${GOPATH}/todo-tg-bot/
+COPY *.go ${GOPATH}/todo-tg-bot/
 COPY go.* ${GOPATH}/todo-tg-bot/
 RUN cd ${GOPATH}/todo-tg-bot/ && \
     go build -o todo-tg-bot .
