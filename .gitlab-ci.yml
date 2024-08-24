@@ -79,5 +79,22 @@ deploy-job:      # This job runs in the deploy stage.
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - echo "Build delpoy docker image..."
-    - docker build -f delpoy/Dockerfile . -t ${DELPOY_DOCKER_IMAGE} --build-arg branch=${CI_COMMIT_REF_NAME}
+    - docker build -f Dockerfile delpoy -t ${DELPOY_DOCKER_IMAGE} --build-arg branch=${CI_COMMIT_REF_NAME}
     - docker push ${DELPOY_DOCKER_IMAGE}
+
+deploy-to-server:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
+        docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+        docker pull $DELPOY_DOCKER_IMAGE &&
+        docker stop myapp || true &&
+        docker rm myapp || true &&
+        docker run -d --name myapp -p 80:80 $DELPOY_DOCKER_IMAGE"
