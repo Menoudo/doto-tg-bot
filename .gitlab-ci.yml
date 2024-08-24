@@ -24,17 +24,17 @@ stages:          # List of stages for jobs, and their order of execution
 variables:
   FILE_TO_COPY: "/go/todo-tg-bot/todo-tg-bot"
 
-build-job:       # This job runs in the build stage, which runs first.
-  stage: build
-  image: docker:stable
-  services:
-    - docker:dind
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - echo "Build docker image..."
-    - docker build -f Dockerfile . -t ${DOCKER_ENV_CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --build-arg branch=${CI_COMMIT_REF_NAME}
-    - docker push $DOCKER_ENV_CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+# build-job:       # This job runs in the build stage, which runs first.
+#   stage: build
+#   image: docker:stable
+#   services:
+#     - docker:dind
+#   before_script:
+#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#   script:
+#     - echo "Build docker image..."
+#     - docker build -f Dockerfile . -t ${DOCKER_ENV_CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --build-arg branch=${CI_COMMIT_REF_NAME}
+#     - docker push $DOCKER_ENV_CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
 build-job-2:
   stage: build
@@ -44,8 +44,9 @@ build-job-2:
     - cp *.go ${GOPATH}/todo-tg-bot/
     - cp go.* ${GOPATH}/todo-tg-bot/
     - cd ${GOPATH}/todo-tg-bot/
-    - pwd
     - go build -o todo-tg-bot .
+    - pwd
+    - ls
   artifacts:
     paths:
       - $FILE_TO_COPY
