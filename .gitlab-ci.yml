@@ -71,7 +71,7 @@ linter-job:   # This job also runs in the test stage.
     - golangci-lint run
 
 deploy-job:      # This job runs in the deploy stage.
-  stage: build
+  stage: deploy
   image: docker:stable
   services:
     - docker:dind
