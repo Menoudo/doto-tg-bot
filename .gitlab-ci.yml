@@ -22,7 +22,7 @@ stages:          # List of stages for jobs, and their order of execution
   - deploy
 
 variables:
-  FILE_TO_COPY: " ${GOPATH}/todo-tg-bot/todo-tg-bot"
+  FILE_TO_COPY: "go/todo-tg-bot/todo-tg-bot"
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
