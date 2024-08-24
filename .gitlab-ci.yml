@@ -36,7 +36,7 @@ build-job:       # This job runs in the build stage, which runs first.
     - docker build -f Dockerfile . -t ${DOCKER_ENV_CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --build-arg branch=${CI_COMMIT_REF_NAME}
     - docker push $DOCKER_ENV_CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
   after_script:
-    - docker run $DOCKER_ENV_CI_REGISTRY_IMAGE:$CI_COMMIT_SHA cp $FILE_TO_COPY /go/todo-tg-bot/todo-tg-bot
+    - docker run $DOCKER_ENV_CI_REGISTRY_IMAGE:$CI_COMMIT_SHA:/go/todo-tg-bot/todo-tg-bot $FILE_TO_COPY
   artifacts:
     paths:
       - $FILE_TO_COPY
