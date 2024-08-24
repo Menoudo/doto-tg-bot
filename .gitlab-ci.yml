@@ -36,12 +36,12 @@ build-job:       # This job runs in the build stage, which runs first.
     - echo "Build pipeline docker image..."
     - docker build -f Dockerfile . -t ${DOCKER_IMAGE} --build-arg branch=${CI_COMMIT_REF_NAME}
     - docker push ${DOCKER_IMAGE}
-  after_script:
-    - mkdir $FILE_TO_COPY
-    - docker run ${DOCKER_IMAGE} cp /go/todo-tg-bot/todo-tg-bot ${FILE_TO_COPY}/
+    - docker run ${DOCKER_IMAGE} cp /go/todo-tg-bot/todo-tg-bot ${FILE_TO_COPY}
+    - cd $CI_BUILDS_DIR
+    - ls
   artifacts:
     paths:
-      - "${FILE_TO_COPY}/*"
+      - "$CI_BUILDS_DIR"
     expire_in: 1 week
 
 # build-job-2:
