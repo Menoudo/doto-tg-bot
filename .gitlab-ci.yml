@@ -33,6 +33,17 @@ build-job:       # This job runs in the build stage, which runs first.
     - docker build -f Dockerfile . -t ${DOCKER_ENV_CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} --build-arg branch=${CI_COMMIT_REF_NAME}
     - docker push $DOCKER_ENV_CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
+build-job-2:
+  stage: build
+  image: golang:1.22.1-alpine3.19
+  script:
+    - apk add --update git; apk add curl; mkdir -p ${GOPATH}/todo-tg-bot
+    - cp *.go ${GOPATH}/todo-tg-bot/
+    - cp go.* ${GOPATH}/todo-tg-bot/
+    - cd ${GOPATH}/todo-tg-bot/
+    - ls
+    - go build -o todo-tg-bot .
+
 # unit-test-job:   # This job runs in the test stage.
 #   stage: test    # It only starts when the job in the build stage completes successfully.
 #   script:
