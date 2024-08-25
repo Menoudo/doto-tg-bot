@@ -93,10 +93,14 @@ func callbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	// and we're handling it. Otherwise, Telegram might retry sending the update repetitively
 	// as it thinks the callback query doesn't reach to our application. learn more by
 	// reading the footnote of the https://core.telegram.org/bots/api#callbackquery type.
-	b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+	_, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
 		CallbackQueryID: update.CallbackQuery.ID,
 		ShowAlert:       false,
 	})
+	if err != nil {
+		fmt.Printf("error AnswerCallbackQuery: %v\n", err)
+		return
+	}
 
 	origMessage := update.CallbackQuery.Message.Message
 
