@@ -40,7 +40,7 @@ build-job:       # This job runs in the build stage, which runs first.
     - echo "Build pipeline docker image..."
     - docker build -f Dockerfile . -t ${PIPELINE_DOCKER_IMAGE} --build-arg branch=${CI_COMMIT_REF_NAME}
     - docker push ${PIPELINE_DOCKER_IMAGE}
-    - docker push -f ${CI_REGISTRY_IMAGE}/delpoy:latest
+    - docker push ${CI_REGISTRY_IMAGE}/delpoy:latest
 
 build-artifact:
   stage: create
