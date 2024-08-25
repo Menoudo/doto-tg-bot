@@ -53,7 +53,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 	massageCount++
 	origMessage := update.ChannelPost
-	logger.Printf(origMessage.Text)
+	logger.Print(origMessage.Text)
 
 	_, errEdit := b.EditMessageText(ctx, &bot.EditMessageTextParams{
 		ChatID:      origMessage.Chat.ID,

@@ -53,12 +53,13 @@ build-artifact:
       - "todo-tg-bot"
     expire_in: 1 week
 
-# unit-test-job:   # This job runs in the test stage.
-#   stage: test    # It only starts when the job in the build stage completes successfully.
-#   script:
-#     - echo "Running unit tests... This will take about 60 seconds."
-#     - sleep 60
-#     - echo "Code coverage is 90%"
+unit-test-job:   # This job runs in the test stage.
+  stage: test    # It only starts when the job in the build stage completes successfully.
+  image: ${PIPELINE_DOCKER_IMAGE}
+  script:
+    - echo "Running unit tests... This will take about 60 seconds."
+    - cd ${GOPATH}/todo-tg-bot/
+    - go test
 
 linter-job:   # This job also runs in the test stage.
   stage: test    # It can run at the same time as unit-test-job (in parallel).

@@ -5,6 +5,7 @@ RUN apk add --update git; \
     mkdir -p ${GOPATH}/todo-tg-bot
 WORKDIR ${GOPATH}/todo-tg-bot/
 COPY *.go ${GOPATH}/todo-tg-bot/
+COPY *.md ${GOPATH}/todo-tg-bot/
 COPY go.* ${GOPATH}/todo-tg-bot/
 RUN cd ${GOPATH}/todo-tg-bot/ && \
     go build -o todo-tg-bot .
