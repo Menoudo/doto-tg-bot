@@ -95,8 +95,9 @@ deploy-to-server:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
   script:
-    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "pwd"
-    - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
+    - traceroute $SERVER_IP
+    - ssh -v -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "pwd"
+    - ssh -v -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
         docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
         docker pull $DELPOY_DOCKER_IMAGE &&
         docker stop delpoy || true &&
