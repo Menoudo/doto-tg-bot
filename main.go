@@ -19,7 +19,7 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b, err := bot.New("TG_BOT_TOKEN", opts...)
+	b, err := bot.New(os.Getenv("TG_BOT_TOKEN"), opts...)
 	if err != nil {
 		panic(err)
 	}
