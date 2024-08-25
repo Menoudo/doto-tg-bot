@@ -70,7 +70,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 func start_handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:    update.Message.Chat.ID,
-		Text:      bot_information,
+		Text:      BotInformation,
 		ParseMode: models.ParseModeMarkdown,
 	})
 	if err != nil {

@@ -6,7 +6,7 @@ import (
 )
 
 //go:embed bot_information.md
-var bot_information string
+var BotInformation string
 
 func UpdateTest(str string, user string) string {
 	if strings.HasPrefix(str, "✅ ") {
