@@ -18,9 +18,9 @@ func main() {
 	defer cancel()
 
 	opts := []bot.Option{
-		bot.WithDefaultHandler(handler),
-		bot.WithCallbackQueryDataHandler("done", bot.MatchTypeContains, callbackHandler),
 		bot.WithMessageTextHandler("/stat", bot.MatchTypeExact, stat_handler),
+		bot.WithCallbackQueryDataHandler("done", bot.MatchTypeContains, callbackHandler),
+		bot.WithDefaultHandler(handler),
 	}
 
 	b, err := bot.New(os.Getenv("TG_BOT_TOKEN"), opts...)
@@ -68,21 +68,12 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 }
 
 func stat_handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	if update.ChannelPost == nil {
-		return
-	}
-	massageCount++
-	origMessage := update.ChannelPost
-	println(origMessage.Text)
-
-	_, errEdit := b.EditMessageText(ctx, &bot.EditMessageTextParams{
-		ChatID:      origMessage.Chat.ID,
-		MessageID:   origMessage.ID,
-		Text:        origMessage.Text,
-		ReplyMarkup: GetTodoKeyboard(false),
+	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   fmt.Sprintf("Message processed: %d", massageCount),
 	})
-	if errEdit != nil {
-		fmt.Printf("error edit message: %v\n", errEdit)
+	if err != nil {
+		fmt.Printf("error edit message: %v\n", err)
 		return
 	}
 }
