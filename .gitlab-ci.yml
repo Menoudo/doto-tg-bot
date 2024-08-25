@@ -103,5 +103,4 @@ deploy-to-server:
         docker stop delpoy || true &&
         docker rm delpoy || true &&
         docker run -d --name delpoy -p 80:80 $DELPOY_DOCKER_IMAGE"
-  when:
-    - manual
+  when: manual
