@@ -1,0 +1,18 @@
+package main
+
+import (
+	_ "embed"
+	"strings"
+)
+
+//go:embed bot_information.md
+var bot_information string
+
+func UpdateTest(str string, user string) string {
+	if strings.HasPrefix(str, "✅ ") {
+		s, _ := strings.CutPrefix(str, "✅ ")
+		return s
+	} else {
+		return "✅ <del>" + str + "</del>\nDone by: <i>" + user + "</i>"
+	}
+}

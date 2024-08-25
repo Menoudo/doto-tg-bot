@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"strings"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -19,6 +18,7 @@ func main() {
 
 	opts := []bot.Option{
 		bot.WithMessageTextHandler("/stat", bot.MatchTypeExact, stat_handler),
+		bot.WithMessageTextHandler("/start", bot.MatchTypeExact, start_handler),
 		bot.WithCallbackQueryDataHandler("done", bot.MatchTypeContains, callbackHandler),
 		bot.WithDefaultHandler(handler),
 	}
@@ -53,7 +53,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 	massageCount++
 	origMessage := update.ChannelPost
-	println(origMessage.Text)
+	logger.Printf(origMessage.Text)
 
 	_, errEdit := b.EditMessageText(ctx, &bot.EditMessageTextParams{
 		ChatID:      origMessage.Chat.ID,
@@ -62,7 +62,18 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		ReplyMarkup: GetTodoKeyboard(false),
 	})
 	if errEdit != nil {
-		fmt.Printf("error edit message: %v\n", errEdit)
+		logger.Printf("error edit message: %v", errEdit)
+		return
+	}
+}
+
+func start_handler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   bot_information,
+	})
+	if err != nil {
+		logger.Printf("error edit message: %v", err)
 		return
 	}
 }
@@ -73,32 +84,18 @@ func stat_handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		Text:   fmt.Sprintf("Message processed: %d", massageCount),
 	})
 	if err != nil {
-		fmt.Printf("error edit message: %v\n", err)
+		logger.Printf("error edit message: %v", err)
 		return
 	}
 }
 
-func updateTest(str string, user string) string {
-	println(str)
-	if strings.HasPrefix(str, "✅ ") {
-		s, _ := strings.CutPrefix(str, "✅ ")
-		return s
-	} else {
-		return "✅ <del>" + str + "</del>\nDone by: <i>" + user + "</i>"
-	}
-}
-
 func callbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	// answering callback query first to let Telegram know that we received the callback query,
-	// and we're handling it. Otherwise, Telegram might retry sending the update repetitively
-	// as it thinks the callback query doesn't reach to our application. learn more by
-	// reading the footnote of the https://core.telegram.org/bots/api#callbackquery type.
 	_, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
 		CallbackQueryID: update.CallbackQuery.ID,
 		ShowAlert:       false,
 	})
 	if err != nil {
-		fmt.Printf("error AnswerCallbackQuery: %v\n", err)
+		logger.Printf("error AnswerCallbackQuery: %v", err)
 		return
 	}
 
@@ -110,12 +107,12 @@ func callbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	_, errEdit := b.EditMessageText(ctx, &bot.EditMessageTextParams{
 		ChatID:      origMessage.Chat.ID,
 		MessageID:   origMessage.ID,
-		Text:        updateTest(origMessage.Text, user),
+		Text:        UpdateTest(origMessage.Text, user),
 		ParseMode:   models.ParseModeHTML,
 		ReplyMarkup: GetTodoKeyboard(isDone),
 	})
 	if errEdit != nil {
-		fmt.Printf("error edit message: %v\n", errEdit)
+		logger.Printf("error edit message: %v", errEdit)
 		return
 	}
 }
