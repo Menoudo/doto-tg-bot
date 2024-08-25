@@ -71,6 +71,7 @@ func start_handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID:    update.Message.Chat.ID,
 		Text:      BotInformation,
+		ParseMode: models.ParseModeHTML,
 	})
 	if err != nil {
 		logger.Printf("error edit message: %v", err)
