@@ -10,7 +10,7 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-var massageCount int = 0
+var msgs *MessageKeeper
 
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
@@ -27,6 +27,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	msgs = NewMessageKeeper()
 
 	b.Start(ctx)
 }
@@ -51,7 +53,6 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	if update.ChannelPost == nil {
 		return
 	}
-	massageCount++
 	origMessage := update.ChannelPost
 	logger.Print(origMessage.Text)
 
@@ -82,7 +83,7 @@ func start_handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 func stat_handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
-		Text:   fmt.Sprintf("Message processed: %d", massageCount),
+		Text:   fmt.Sprintf("Done msgs: %d", msgs.GetMessagesCount()),
 	})
 	if err != nil {
 		logger.Printf("error edit message: %v", err)
@@ -103,6 +104,11 @@ func callbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	origMessage := update.CallbackQuery.Message.Message
 
 	isDone := update.CallbackQuery.Data == "done"
+	if isDone {
+		msgs.DoneMessage(origMessage)
+	} else {
+		msgs.UnDoneMessage(origMessage)
+	}
 	user := update.CallbackQuery.From.Username
 
 	_, errEdit := b.EditMessageText(ctx, &bot.EditMessageTextParams{

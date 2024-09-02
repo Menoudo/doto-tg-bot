@@ -16,3 +16,7 @@ func UpdateTest(str string, user string) string {
 		return "✅ <del>" + str + "</del>\nDone by: <i>" + user + "</i>"
 	}
 }
+
+func JoinMessagesText(msgs any) string {
+	return ""
+}
